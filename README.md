@@ -35,7 +35,7 @@ https://github.com/SAP-samples/cloud-cap-risk-management
 https://developers.sap.com/tutorials/btp-app-ext-service-add-consumption.html#50a79146-97a1-4900-86a4-6be2b05bd843
 
 
-# Adding git
+# Adding git 
 User        :   german.mesa@sap.com
 Password    :   Pitagoras_2020.
 Repository  :   https://github.com/german-mesa/C_CPE_13.git
