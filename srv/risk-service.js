@@ -4,13 +4,27 @@ const cds = require('@sap/cds')
  * Implementation for Risk Management service defined in ./risk-service.cds
  */
 module.exports = cds.service.impl(async function () {
+    const { Suppliers, Risks } = this.entities;
+
     const bupa = await cds.connect.to('API_BUSINESS_PARTNER');
 
-    this.on('READ', 'Suppliers', async req => {
-        return bupa.run(req.query);
+    this.on('READ', Suppliers, async req => {
+        try {
+            req.query.where("BusinessPartnerFullName <> '' ");
+
+            const tx = bupa.transaction();
+            return await tx.send({
+                query: req.query,
+                headers: {
+                    "APIKey": process.env.APIKey
+                }
+            });
+        } catch (err) {
+            req.reject(err);
+        }
     });
 
-    this.after('READ', 'Risks', risksData => {
+    this.after('READ', Risks, risksData => {
         const risks = Array.isArray(risksData) ? risksData : [risksData];
         risks.forEach(risk => {
             if (risk.impact >= 100000) {
@@ -22,7 +36,7 @@ module.exports = cds.service.impl(async function () {
     });
 
     // Risks?$expand=supplier
-    this.on("READ", 'Risks', async (req, next) => {
+    this.on("READ", Risks, async (req, next) => {
         if (!req.query.SELECT.columns) return next();
         const expandIndex = req.query.SELECT.columns.findIndex(
             ({ expand, ref }) => expand && ref[0] === "supplier"
@@ -46,7 +60,14 @@ module.exports = cds.service.impl(async function () {
 
         // Request all associated suppliers
         const supplierIds = asArray(risks).map(risk => risk.supplier_ID);
-        const suppliers = await bupa.run(SELECT.from('RiskService.Suppliers').where({ ID: supplierIds }));
+
+        const tx = bupa.transaction();
+        const suppliers = await tx.send({
+            query: SELECT.from('RiskService.Suppliers').where({ ID: supplierIds }),
+            headers: {
+                "APIKey": process.env.APIKey
+            }
+        });
 
         // Convert in a map for easier lookup
         const suppliersMap = {};

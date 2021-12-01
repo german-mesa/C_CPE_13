@@ -48,12 +48,20 @@
             "db": {
                 "kind": "sql"
             },
+            "xsuaa":{
+                "kind": "xsuaa"
+            },
             "API_BUSINESS_PARTNER": {
                 "kind": "odata-v2",
                 "model": "srv/external/API_BUSINESS_PARTNER",
                 "[sandbox]": {
                     "credentials": {
                         "url": "https://sandbox.api.sap.com/s4hanacloud/sap/opu/odata/sap/API_BUSINESS_PARTNER/"
+                    }
+                },
+                "[production]": {
+                    "credentials": {
+                        "destination": "API_BUSINESS_PARTNER"
                     }
                 }
             }

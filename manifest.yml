@@ -14,7 +14,8 @@ applications:
   buildpack: nodejs_buildpack
   services:
   - risk-management-db
-
+  - risk-management-xsuaa
+  - risk-management-destination-service
 # -----------------------------------------------------------------------------------
 # HANA Database Content Deployer App
 # -----------------------------------------------------------------------------------
