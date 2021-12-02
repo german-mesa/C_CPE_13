@@ -16,7 +16,7 @@ general:
 # Stages configuration
 stages:
   Build:
-    mavenExecuteStaticCodeChecks: flase   # true, if you want to execute static code checks to verify the syntax of your Java code
+    mavenExecuteStaticCodeChecks: false   # true, if you want to execute static code checks to verify the syntax of your Java code
     npmExecuteLint: true                  # true, if you want to run a lint check that verifies the syntax of your JavaScript code
 
   Additional Unit Tests:
@@ -28,7 +28,7 @@ stages:
     cfApiEndpoint: "https://api.cf.us10.hana.ondemand.com"
     cfOrg: "293475betrial"
     cfSpace: "dev"
-    cfAppName: "<NAME OF YOUR APPLICATION>"
+    cfAppName: ""
     cfCredentialsId: "cfdeployment"
 
 # Steps configuration
