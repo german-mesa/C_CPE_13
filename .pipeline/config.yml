@@ -9,34 +9,45 @@
 ###
 
 
-
-### General project setup
+# Project configuration
 general:
-  inferBuildTool: true
+  buildTool: "mta"             # or "npm" or "maven"
 
-### Step-specific configuration
-steps:
-  mavenExecute:
-    dockerImage: devxci/mbtci:1.0.14
-
-  artifactPrepareVersion:
-    versioningType: cloud_noTag
-
-### Stage-specific configuration
+# Stages configuration
 stages:
-  'Confirm':
-    manualConfirmation: false
+  Build:
+    mavenExecuteStaticCodeChecks: flase   # true, if you want to execute static code checks to verify the syntax of your Java code
+    npmExecuteLint: true                  # true, if you want to run a lint check that verifies the syntax of your JavaScript code
 
-#  Integration:
-#    credentials:
-#      - alias: 'mySystemAlias'
-#        credentialId: 'mySystemCredentialsId'
+  Additional Unit Tests:
+    karmaExecuteTests: false   # true, if you want to execute the Karma Test Runner (default: false)
+    npmExecuteScripts: false   # true, if you want to execute test scripts that are defined in step npmExecuteScripts
 
-#  Release:
-#    cfTargets:
-#      - org: 'myOrg'
-#        space: 'mySpace'
-#        apiEndpoint: 'https://'
-#        appName: 'myAppName'
-#        manifest: 'manifest.yml'
-#        credentialsId: 'myDeploymentCredentialsId'
+  Release:
+    cloudFoundryDeploy: true  # true, if you want to deploy to Cloud Foundry. If you set this parameter to true, the CloudFoundryDeploy step is mandatory
+    cfApiEndpoint: "https://api.cf.us10.hana.ondemand.com"
+    cfOrg: "293475betrial"
+    cfSpace: "dev"
+    cfAppName: "<NAME OF YOUR APPLICATION>"
+    cfCredentialsId: "cfdeployment"
+
+# Steps configuration
+steps:
+# Init stage step 
+  artifactPrepareVersion:
+    versioningType: "cloud_noTag"                                                # or 'cloud', if you want your pipeline to write Git tags. In this case, you need to add the gitHttpsCredentialsId parameter
+                                                                                 # or 'library' for maven. In this case, the version needs to be set in the pom.xml file
+ 
+# Build stage step 
+  npmExecuteLint:
+    failOnError: false                                                           # true, if you want your pipeline to fail, if the lint check reveals any errors
+
+# Test stage step 
+  npmExecuteScripts:                                                             # only relevant, if you set the npmExecuteScripts parameter in the Additional Unit Tests stage to true
+    runScripts:
+        - "test"                                                                 # list of script names in your package.json file to be executed 
+
+# Release stage steps 
+  cloudFoundryDeploy:                                                            # only relevant, if you set the cloudFoundryDeploy parameter in the Release stage to true
+    mtaDeployParameters: "-f --version-rule ALL"
+    
